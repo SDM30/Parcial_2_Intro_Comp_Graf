@@ -182,8 +182,8 @@ int main()
 	lightEBO.Unbind();
 
 
-	glm::vec4 lightColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	glm::vec3 lightPos = glm::vec3(0.7f, 0.7f, 0.7f);
+	glm::vec4 lightColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+	glm::vec3 lightPos = glm::vec3(1.0f, 0.1f, 0.2f);
 	glm::mat4 lightModel = glm::mat4(1.0f);
 	lightModel = glm::translate(lightModel, lightPos);
 
@@ -207,6 +207,9 @@ int main()
 	// Texture loading with error checking
 	Texture tiles("wall_tiles_texture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
 	tiles.texUnit(shaderProgram, "tex0", 0);
+	// import specular map
+	Texture tilesSpec("wall_tiles_texture_spec.png", GL_TEXTURE_2D, GL_TEXTURE1, GL_UNSIGNED_BYTE);
+	tilesSpec.texUnit(shaderProgram, "tex1", 1);
 
 	// Variables that help the rotation of the pyramid
 	float rotation = 0.0f;
@@ -231,10 +234,15 @@ int main()
 
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
+		glUniform3f(glGetUniformLocation(shaderProgram.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 		// Export the camMatrix to the Vertex Shader of the pyramid
 		camera.Matrix(shaderProgram, "camMatrix");
-		// Bind the cube texture
+		// Bind the cube texture to texture unit 0
+		glActiveTexture(GL_TEXTURE0);
 		tiles.Bind();
+		// Bind the specular map to texture unit 1
+		glActiveTexture(GL_TEXTURE1);
+		tilesSpec.Bind();
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices

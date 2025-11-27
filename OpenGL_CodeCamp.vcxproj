@@ -162,6 +162,7 @@
   <ItemGroup>
     <Image Include="..\..\..\Pictures\textures\dude.png" />
     <Image Include="wall_tiles_texture.png" />
+    <Image Include="wall_tiles_texture_spec.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
