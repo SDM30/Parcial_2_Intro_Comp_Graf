@@ -19,18 +19,42 @@ const unsigned int width = 800;
 const unsigned int height = 800;
 
 GLfloat cubeVertexData[] =
-{ //     COORDINATES     /        COLORS      /   TexCoord  //
-	// Front
-	-0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,  // 0
-	 0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,  // 1
-	 0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,  // 2
-	-0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,  // 3
+{ //     COORDINATES     /        COLORS      /   TexCoord  /    NORMALS    //
+	// Front face (cara frontal) - Normal: (0.0f, 0.0f, 1.0f)
+	-0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,     0.0f, 0.0f, 1.0f,  // 0
+	 0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,     0.0f, 0.0f, 1.0f,  // 1
+	 0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,     0.0f, 0.0f, 1.0f,  // 2
+	-0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,     0.0f, 0.0f, 1.0f,  // 3
 
-	// Back
-	-0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,  // 4
-	 0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,  // 5
-	 0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,  // 6
-	-0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f   // 7
+	// Back face (cara trasera) - Normal: (0.0f, 0.0f, -1.0f)
+	 0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,     0.0f, 0.0f, -1.0f, // 4
+	-0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,     0.0f, 0.0f, -1.0f, // 5
+	-0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,     0.0f, 0.0f, -1.0f, // 6
+	 0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,     0.0f, 0.0f, -1.0f, // 7
+
+	 // Top face (cara superior) - Normal: (0.0f, 1.0f, 0.0f)
+	 -0.5f,  0.5f,  0.5f,     0.92f, 0.86f, 0.76f,    0.0f, 0.0f,     0.0f, 1.0f, 0.0f,  // 8
+	  0.5f,  0.5f,  0.5f,     0.92f, 0.86f, 0.76f,    1.0f, 0.0f,     0.0f, 1.0f, 0.0f,  // 9
+	  0.5f,  0.5f, -0.5f,     0.92f, 0.86f, 0.76f,    1.0f, 1.0f,     0.0f, 1.0f, 0.0f,  // 10
+	 -0.5f,  0.5f, -0.5f,     0.92f, 0.86f, 0.76f,    0.0f, 1.0f,     0.0f, 1.0f, 0.0f,  // 11
+
+	 // Bottom face (cara inferior) - Normal: (0.0f, -1.0f, 0.0f)
+	 -0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,     0.0f, -1.0f, 0.0f, // 12
+	  0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,     0.0f, -1.0f, 0.0f, // 13
+	  0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,     0.0f, -1.0f, 0.0f, // 14
+	 -0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,     0.0f, -1.0f, 0.0f, // 15
+
+	 // Right face (cara derecha) - Normal: (1.0f, 0.0f, 0.0f)
+	  0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,     1.0f, 0.0f, 0.0f,  // 16
+	  0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,     1.0f, 0.0f, 0.0f,  // 17
+	  0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,     1.0f, 0.0f, 0.0f,  // 18
+	  0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,     1.0f, 0.0f, 0.0f,  // 19
+
+	  // Left face (cara izquierda) - Normal: (-1.0f, 0.0f, 0.0f)
+	  -0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,     -1.0f, 0.0f, 0.0f, // 20
+	  -0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,     -1.0f, 0.0f, 0.0f, // 21
+	  -0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,     -1.0f, 0.0f, 0.0f, // 22
+	  -0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,     -1.0f, 0.0f, 0.0f  // 23
 };
 
 GLuint cubeElementIndices[] =
@@ -40,24 +64,24 @@ GLuint cubeElementIndices[] =
 	2, 3, 0,
 
 	// Back face
-	5, 4, 7,
-	7, 6, 5,
+	4, 5, 6,
+	6, 7, 4,
 
 	// Top face
-	3, 2, 6,
-	6, 7, 3,
+	8, 9, 10,
+	10, 11, 8,
 
 	// Bottom face
-	4, 5, 1,
-	1, 0, 4,
+	12, 13, 14,
+	14, 15, 12,
 
 	// Right face
-	1, 5, 6,
-	6, 2, 1,
+	16, 17, 18,
+	18, 19, 16,
 
 	// Left face
-	4, 0, 3,
-	3, 7, 4
+	20, 21, 22,
+	22, 23, 20
 };
 
 GLfloat lightVertices[] =
@@ -132,9 +156,10 @@ int main()
 	EBO EBO1(cubeElementIndices, sizeof(cubeElementIndices));
 
 	// Links VBO to VAO
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 3, 3, GL_FLOAT, 11 * sizeof(float), (void*)(8 * sizeof(float)));
 	// Unbind all to prevent accidentally modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
@@ -180,8 +205,8 @@ int main()
 	stbi_set_flip_vertically_on_load(true);
 	// import image for texture
 	// Texture loading with error checking
-	Texture dude("dude.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
-	dude.texUnit(shaderProgram, "tex0", 0);
+	Texture tiles("wall_tiles_texture.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_UNSIGNED_BYTE);
+	tiles.texUnit(shaderProgram, "tex0", 0);
 
 	// Variables that help the rotation of the pyramid
 	float rotation = 0.0f;
@@ -209,7 +234,7 @@ int main()
 		// Export the camMatrix to the Vertex Shader of the pyramid
 		camera.Matrix(shaderProgram, "camMatrix");
 		// Bind the cube texture
-		dude.Bind();
+		tiles.Bind();
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
@@ -237,7 +262,7 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
-	dude.Delete();
+	tiles.Delete();
 	shaderProgram.Delete();
 	lightVAO.Delete();
 	lightVBO.Delete();
