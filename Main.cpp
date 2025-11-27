@@ -18,21 +18,75 @@
 const unsigned int width = 800;
 const unsigned int height = 800;
 
-GLfloat squareVertexData[] =
-{ //     COORDINATES     /        COLORS      /   TEX COORDS
-	-0.5f, -0.5f,  0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f,	// Lower-left
-	-0.5f,  0.5f,  0.0f,	0.0f, 1.0f, 0.0f,	0.0f, 1.0f,	// Upper-left
-	 0.5f,  0.5f,  0.0f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f,	// Upper-right
-	 0.5f, -0.5f,  0.0f,	1.0f, 1.0f, 1.0f,	1.0f, 0.0f,	// Lower-right
+GLfloat cubeVertexData[] =
+{ //     COORDINATES     /        COLORS      /   TexCoord  //
+	// Front
+	-0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,  // 0
+	 0.5f, -0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,  // 1
+	 0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f,  // 2
+	-0.5f,  0.5f,  0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,  // 3
+
+	// Back
+	-0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 0.0f,  // 4
+	 0.5f, -0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 0.0f,  // 5
+	 0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    0.0f, 1.0f,  // 6
+	-0.5f,  0.5f, -0.5f,     0.83f, 0.70f, 0.44f,    1.0f, 1.0f   // 7
 };
 
-
-GLuint squareElementIndices[] =
+GLuint cubeElementIndices[] =
 {
-	0,2,1,
-	0,3,2
+	// Front face
+	0, 1, 2,
+	2, 3, 0,
+
+	// Back face
+	5, 4, 7,
+	7, 6, 5,
+
+	// Top face
+	3, 2, 6,
+	6, 7, 3,
+
+	// Bottom face
+	4, 5, 1,
+	1, 0, 4,
+
+	// Right face
+	1, 5, 6,
+	6, 2, 1,
+
+	// Left face
+	4, 0, 3,
+	3, 7, 4
 };
 
+GLfloat lightVertices[] =
+{ //     COORDINATES     //
+	-0.1f, -0.1f,  0.1f,
+	-0.1f, -0.1f, -0.1f,
+	 0.1f, -0.1f, -0.1f,
+	 0.1f, -0.1f,  0.1f,
+	-0.1f,  0.1f,  0.1f,
+	-0.1f,  0.1f, -0.1f,
+	 0.1f,  0.1f, -0.1f,
+	 0.1f,  0.1f,  0.1f
+};
+
+GLuint lightIndices[] =
+{
+	0, 1, 2,
+	0, 2, 3,
+	0, 4, 7,
+	0, 7, 3,
+	3, 7, 6,
+	3, 6, 2,
+	2, 6, 5,
+	2, 5, 1,
+	1, 5, 4,
+	1, 4, 0,
+	4, 5, 6,
+	4, 6, 7
+};
 
 int main()
 {
@@ -73,9 +127,9 @@ int main()
 	VAO1.Bind();
 
 	// Generates Vertex Buffer Object and links it to vertices
-	VBO VBO1(squareVertexData, sizeof(squareVertexData));
+	VBO VBO1(cubeVertexData, sizeof(cubeVertexData));
 	// Generates Element Buffer Object and links it to indices
-	EBO EBO1(squareElementIndices, sizeof(squareElementIndices));
+	EBO EBO1(cubeElementIndices, sizeof(cubeElementIndices));
 
 	// Links VBO to VAO
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
@@ -85,6 +139,41 @@ int main()
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
+
+	// Shader for light cube
+	Shader lightShader("light.vert", "light.frag");
+	// Generates Vertex Array Object and binds it
+	VAO lightVAO;
+	lightVAO.Bind();
+	// Generates Vertex Buffer Object and links it to vertices
+	VBO lightVBO(lightVertices, sizeof(lightVertices));
+	// Generates Element Buffer Object and links it to indices
+	EBO lightEBO(lightIndices, sizeof(lightIndices));
+	// Links VBO attributes such as coordinates and colors to VAO
+	lightVAO.LinkAttrib(lightVBO, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
+	// Unbind all to prevent accidentally modifying them
+	lightVAO.Unbind();
+	lightVBO.Unbind();
+	lightEBO.Unbind();
+
+
+	glm::vec4 lightColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	glm::vec3 lightPos = glm::vec3(0.7f, 0.7f, 0.7f);
+	glm::mat4 lightModel = glm::mat4(1.0f);
+	lightModel = glm::translate(lightModel, lightPos);
+
+	glm::vec3 cubePos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::mat4 cubeModel = glm::mat4(1.0f);
+	cubeModel = glm::translate(cubeModel, cubePos);
+
+
+	lightShader.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(lightShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(lightModel));
+	glUniform4f(glGetUniformLocation(lightShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	shaderProgram.Activate();
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(cubeModel));
+	glUniform4f(glGetUniformLocation(shaderProgram.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 	// Texture
 	int widthImg, heightImg, numColCh;
@@ -110,18 +199,33 @@ int main()
 		glClearColor(0.10f, 0.10f, 0.17f, 1.0f);
 		// Clean the back buffer and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Handle camera inputs
+		camera.Inputs(window);
+		// Update and export the camera matrix to the Vertex Shader
+		camera.updateMatrix(45.0f, 0.1f, 100.0f);
+
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
-
+		// Export the camMatrix to the Vertex Shader of the pyramid
+		camera.Matrix(shaderProgram, "camMatrix");
+		// Bind the cube texture
 		dude.Bind();
-
-		camera.Inputs(window);
-		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
-
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
-		glDrawElements(GL_TRIANGLES, sizeof(squareElementIndices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(cubeElementIndices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		
+
+		// Tells OpenGL which Shader Program we want to use
+		lightShader.Activate();
+		// Export the camMatrix to the Vertex Shader of the light cube
+		camera.Matrix(lightShader, "camMatrix");
+		// Bind the VAO so OpenGL knows to use it
+		lightVAO.Bind();
+		// Draw primitives, number of indices, datatype of indices, index of indices
+		glDrawElements(GL_TRIANGLES, sizeof(lightIndices) / sizeof(int), GL_UNSIGNED_INT, 0);
+
+		
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
@@ -133,8 +237,12 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
-	shaderProgram.Delete();
 	dude.Delete();
+	shaderProgram.Delete();
+	lightVAO.Delete();
+	lightVBO.Delete();
+	lightEBO.Delete();
+	lightShader.Delete();
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
