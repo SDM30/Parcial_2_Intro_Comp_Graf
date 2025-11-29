@@ -350,3 +350,36 @@ std::vector<glm::vec4> Model::groupFloatsVec4(std::vector<float> floatVec)
 	}
 	return vectors;
 }
+
+void Model::CenterToOrigin()
+{
+	if (meshes.empty()) return;
+
+	// Calcular centro del modelo (bounding box)
+	glm::vec3 minBounds(FLT_MAX);
+	glm::vec3 maxBounds(-FLT_MAX);
+
+	for (const auto& mesh : meshes) {
+		for (const auto& vertex : mesh.vertices) {
+			glm::vec3 worldPos = glm::vec3(matricesMeshes[0] * glm::vec4(vertex.position, 1.0f));
+			minBounds = glm::min(minBounds, worldPos);
+			maxBounds = glm::max(maxBounds, worldPos);
+		}
+	}
+
+	glm::vec3 center = (minBounds + maxBounds) * 0.5f;
+	glm::vec3 translationToOrigin = -center;
+
+	std::cout << "Model center: (" << center.x << ", " << center.y << ", " << center.z << ")" << std::endl;
+	std::cout << "Translating by: (" << translationToOrigin.x << ", " << translationToOrigin.y << ", " << translationToOrigin.z << ")" << std::endl;
+
+	// Aplicar translación a todas las matrices
+	for (auto& matrix : matricesMeshes) {
+		matrix = glm::translate(matrix, translationToOrigin);
+	}
+
+	// Actualizar también translationsMeshes si las usas por separado
+	for (auto& translation : translationsMeshes) {
+		translation += translationToOrigin;
+	}
+}

@@ -66,7 +66,7 @@ void Camera::Inputs(GLFWwindow* window)
 	}
 
 	if (defaultMov) {
-		float radius = 10.0f;
+		float radius = 50.0f;
 		float camX = sin(glfwGetTime()) * radius;
 		float camZ = cos(glfwGetTime()) * radius;
 		Position = glm::vec3(camX, 0, camZ);

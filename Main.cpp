@@ -62,6 +62,8 @@ int main()
 
 	Model model("models/map/scene.gltf");
 
+	model.CenterToOrigin();
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{

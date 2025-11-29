@@ -14,6 +14,8 @@ public:
 	Model(const char* file);
 
 	void Draw(Shader& shader, Camera& camera);
+	// Center model to origin
+	void CenterToOrigin();
 
 private:
 	// Variables for easy access

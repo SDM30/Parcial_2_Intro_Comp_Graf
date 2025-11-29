@@ -6,10 +6,10 @@
 #include<vector>
 
 struct Vertex {
-	glm::vec3 positon;
+	glm::vec3 position;
 	glm::vec3 normal;
 	glm::vec3 color;
-	glm::vec2 textUV;
+	glm::vec2 texUV;
 };
 
 class VBO
