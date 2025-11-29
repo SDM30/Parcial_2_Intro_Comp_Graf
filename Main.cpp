@@ -10,7 +10,6 @@
 #include"VBO.h"
 #include"EBO.h"
 
-
 const unsigned int width = 800;
 const unsigned int height = 800;
 
@@ -27,7 +26,6 @@ GLfloat pyramidVertexData[] =
 	  0.0f, 0.8f,  0.0f,     1.0f, 0.5f, 0.0f	// Orange (vert 4)
 };
 
-
 GLuint pyramidElementIndices[] =
 {
 	0, 1, 2, // Pyramid base upper diagonal
@@ -39,131 +37,139 @@ GLuint pyramidElementIndices[] =
 	3, 0, 4  // Side 4 left
 };
 
-
 int main()
 {
-	// Initialize GLFW
+	// Initialize GLFW - Inicializa la biblioteca GLFW
 	glfwInit();
 
-	// Tell GLFW what version of OpenGL we are using 
-	// In this case we are using OpenGL 3.3
+	// Configura la versión de OpenGL a usar (3.3)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Tell GLFW we are using the CORE profile
-	// So that means we only have the modern functions
+	// Usa el perfil core de OpenGL (solo funciones modernas)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	GLFWwindow* window = glfwCreateWindow(width, height, "PARCIAL II", NULL, NULL);
-	// Error check if the window fails to create
+	// Crea una ventana de 800x800 pixels
+	GLFWwindow* window = glfwCreateWindow(width, height, "PARCIAL II - Piramide Rotando", NULL, NULL);
+	// Verifica si la ventana se creó correctamente
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-	// Introduce the window into the current context
+	// Hace que la ventana sea el contexto actual de OpenGL
 	glfwMakeContextCurrent(window);
 
-	//Load GLAD so it configures OpenGL
+	// Carga las funciones de OpenGL mediante GLAD
 	gladLoadGL();
-	// Specify the viewport of OpenGL in the Window
-	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
+	// Define el área de visualización dentro de la ventana
 	glViewport(0, 0, width, height);
 
-	// Generates Shader object using shaders defualt.vert and default.frag
+	// Crea un objeto shader con los archivos de vértice y fragmento
 	Shader shaderProgram("default.vert", "default.frag");
 
-	// Generates Vertex Array Object and binds it
+	// Crea y enlaza el Vertex Array Object
 	VAO VAO1;
 	VAO1.Bind();
 
-	// Generates Vertex Buffer Object and links it to vertices
+	// Crea el Vertex Buffer Object con los datos de los vértices
 	VBO VBO1(pyramidVertexData, sizeof(pyramidVertexData));
-	// Generates Element Buffer Object and links it to indices
+	// Crea el Element Buffer Object con los índices de los triángulos
 	EBO EBO1(pyramidElementIndices, sizeof(pyramidElementIndices));
 
-	// Links VBO to VAO
+	// Configura el atributo de posición (location 0) en el VAO
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	// Configura el atributo de color (location 1) en el VAO
 	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	// Unbind all to prevent accidentally modifying them
+
+	// Desenlaza todos los objetos para evitar modificaciones accidentales
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-
-	// Variables that help the rotation of the pyramid
+	// Variable para controlar la rotación de la pirámide
 	float rotation = 0.0f;
+	// Variable para almacenar el tiempo del frame anterior
 	double prevTime = glfwGetTime();
 
-	// Enables the Depth Buffer
+	// Habilita el depth testing para renderizado 3D correcto
 	glEnable(GL_DEPTH_TEST);
 
-
-	// Main while loop
+	// Loop principal de la aplicación
 	while (!glfwWindowShouldClose(window))
 	{
-		// Specify the color of the background
+		// Establece el color de fondo (azul oscuro)
 		glClearColor(0.10f, 0.10f, 0.17f, 1.0f);
-		// Clean the back buffer and depth buffer
+		// Limpia los buffers de color y profundidad
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// Tell OpenGL which Shader Program we want to use
+		// Activa el programa de shaders
 		shaderProgram.Activate();
 
-		// Simple timer
+		// Obtiene el tiempo actual
 		double crntTime = glfwGetTime();
+		// Actualiza la rotación cada 1/60 segundos
 		if (crntTime - prevTime >= 1.0f / 60.0f)
 		{
-			rotation += 0.5f;
+			// Incrementa el ángulo de rotación
+			rotation += 1.5f;
+			// Mantiene el ángulo entre 0 y 360 grados
+			if (rotation > 360.0f) rotation -= 360.0f;
+			// Actualiza el tiempo del frame anterior
 			prevTime = crntTime;
 		}
 
+		// Matrices de transformación
+		glm::mat4 model = glm::mat4(1.0f);  // Matriz modelo (transformaciones del objeto)
+		glm::mat4 view = glm::mat4(1.0f);   // Matriz vista (posición/orientación de la cámara)
+		glm::mat4 proj = glm::mat4(1.0f);   // Matriz proyección (perspectiva)
 
-		// transformation matrices
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 proj = glm::mat4(1.0f);
+		// Mueve la pirámide 3 unidades hacia atrás en el eje Z
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -3.0f));
+		// Rota la pirámide continuamente alrededor del eje Y
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
 
-		// Assigns different transformations to each matrix
-		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::translate(model, glm::vec3(0.0f, 0.1f, -3.0f));
-		// camera transformation
-		float radius = 10.0f;
-		float camX = sin(glfwGetTime()) * radius;
-		float camZ = cos(glfwGetTime()) * radius;
-		view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		proj = glm::perspective(glm::radians(45.0f), (float)(width/height), 0.1f, 100.0f);
-;
+		// Configura la cámara en posición fija
+		view = glm::lookAt(
+			glm::vec3(0.0f, 2.0f, 0.0f),    // Posición de la cámara (arriba y centrada)
+			glm::vec3(0.0f, 0.0f, -3.0f),   // Punto al que mira la cámara (centro de la pirámide)
+			glm::vec3(0.0f, 1.0f, 0.0f)     // Vector que indica la dirección "arriba"
+		);
 
-		// Outputs the matrices into the Vertex Shader
+		// Configura la proyección en perspectiva
+		proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
+
+		// Obtiene la ubicación del uniform "model" en el shader
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
+		// Envía la matriz modelo al shader
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		// Obtiene la ubicación del uniform "view" en el shader
 		int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
+		// Envía la matriz vista al shader
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		// Obtiene la ubicación del uniform "proj" en el shader
 		int projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
+		// Envía la matriz proyección al shader
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
-
-		// Bind the VAO so OpenGL knows to use it
+		// Enlaza el VAO para dibujar
 		VAO1.Bind();
-		// Draw primitives, number of indices, datatype of indices, index of indices
-		glPointSize(10.0f);
-		glDrawElements(GL_TRIANGLES, sizeof(pyramidElementIndices)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
-		// Swap the back buffer with the front buffer
+		// Dibuja la pirámide usando los índices (triángulos)
+		glDrawElements(GL_TRIANGLES, sizeof(pyramidElementIndices) / sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
+		// Intercambia los buffers (doble buffer)
 		glfwSwapBuffers(window);
-		// Take care of all GLFW events
+		// Procesa eventos de la ventana
 		glfwPollEvents();
 	}
 
-
-	// Delete all the objects we've created
+	// Limpieza: elimina todos los objetos creados
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
 	shaderProgram.Delete();
-	// Delete window before ending the program
+	// Destruye la ventana
 	glfwDestroyWindow(window);
-	// Terminate GLFW before ending the program
+	// Termina GLFW
 	glfwTerminate();
 	return 0;
 }
