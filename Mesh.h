@@ -30,5 +30,8 @@ public:
 		glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
 		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)
 	);
+
+	// Draws the mesh
+	void DrawBasic(Shader& shader, Camera& camera);
 };
 #endif
