@@ -170,7 +170,11 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 	// Enables the Depth Buffer
-	glEnable(GL_DEPTH_TEST);    
+	glEnable(GL_DEPTH_TEST); 
+	// FACE CULLING
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 3.0f));
 
 
