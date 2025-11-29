@@ -3,7 +3,6 @@
 // Outputs colors in RGBA
 out vec4 FragColor;
 
-
 // Imports the current position from the Vertex Shader
 in vec3 crntPos;
 // Imports the normal from the Vertex Shader
@@ -12,6 +11,7 @@ in vec3 Normal;
 in vec3 color;
 // Imports the texture coordinates from the Vertex Shader
 in vec2 texCoord;
+
 
 
 // Gets the Texture Units from the main function
@@ -76,7 +76,7 @@ vec4 direcLight()
 
 vec4 spotLight()
 {
-	// Efficient form of expressing angles
+	// controls how big the area that is lit up is
 	float outerCone = 0.90f;
 	float innerCone = 0.95f;
 
@@ -95,7 +95,8 @@ vec4 spotLight()
 	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
 	float specular = specAmount * specularLight;
 
-	float angle = dot(vec3(-1.0f, 0.0f, 0.0f), -lightDirection);
+	// calculates the intensity of the crntPos based on its angle to the center of the light cone
+	float angle = dot(vec3(0.0f, -1.0f, 0.0f), -lightDirection);
 	float inten = clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
 
 	return (texture(diffuse0, texCoord) * (diffuse * inten + ambient) + texture(specular0, texCoord).r * specular * inten) * lightColor;
@@ -105,5 +106,5 @@ vec4 spotLight()
 void main()
 {
 	// outputs final color
-	FragColor = pointLight();
+	FragColor = direcLight();
 }
